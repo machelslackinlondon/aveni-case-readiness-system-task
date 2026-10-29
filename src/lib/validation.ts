@@ -5,6 +5,10 @@ import type {
   Rule,
   Tenant,
 } from "../domain/types";
+import {
+  InvalidRuleError,
+  parseRule,
+} from "../domain/readiness-rule";
 import { ApiError } from "./api-error";
 
 type JsonObject = Record<string, unknown>;
@@ -108,46 +112,13 @@ export function readCaseInput(
 }
 
 export function readRule(value: unknown, label = "rule"): Rule {
-  const rule = readObject(value, label);
-
-  if (rule.type === "countAtLeast") {
-    rejectUnsupportedFields(
-      rule,
-      ["type", "artifactType", "count"],
-      label,
-    );
-
-    if (
-      typeof rule.count !== "number" ||
-      !Number.isInteger(rule.count) ||
-      rule.count < 1
-    ) {
-      return validationError(`${label}.count must be a positive integer.`);
+  try {
+    return parseRule(value, label);
+  } catch (error) {
+    if (error instanceof InvalidRuleError) {
+      return validationError(error.message);
     }
 
-    return {
-      type: "countAtLeast",
-      artifactType: readArtifactType(rule.artifactType),
-      count: rule.count,
-    };
+    throw error;
   }
-
-  if (rule.type === "all" || rule.type === "any") {
-    rejectUnsupportedFields(rule, ["type", "rules"], label);
-
-    if (!Array.isArray(rule.rules)) {
-      return validationError(`${label}.rules must be an array.`);
-    }
-
-    return {
-      type: rule.type,
-      rules: rule.rules.map((nestedRule, index) =>
-        readRule(nestedRule, `${label}.rules[${index}]`),
-      ),
-    };
-  }
-
-  return validationError(
-    `${label}.type must be one of: countAtLeast, all, any.`,
-  );
 }

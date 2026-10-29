@@ -26,6 +26,11 @@ export type CaseState = {
   artifactCounts: ArtifactCounts;
 };
 
+export type ReadinessEvent = {
+  caseId: string;
+  tenantId: string;
+};
+
 export type Rule =
   | {
       type: "countAtLeast";

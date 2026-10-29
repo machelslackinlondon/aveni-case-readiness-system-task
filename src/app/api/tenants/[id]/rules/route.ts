@@ -1,4 +1,5 @@
 import { withApiErrorHandling } from "../../../../../lib/api-error";
+import { getApplication } from "../../../../../lib/application";
 import { readJsonBody } from "../../../../../lib/http";
 import {
   readRouteId,
@@ -12,22 +13,25 @@ import {
 
 export async function GET(_request: Request, context: RouteContext) {
   return withApiErrorHandling(async () => {
-    await readRouteId(context);
+    const tenantId = await readRouteId(context);
 
     return Response.json({
-      rule: null,
+      rule: getApplication().tenants.getRule(tenantId) ?? null,
     });
   });
 }
 
 export async function PUT(request: Request, context: RouteContext) {
   return withApiErrorHandling(async () => {
-    await readRouteId(context);
+    const tenantId = await readRouteId(context);
     const body = readObject(await readJsonBody(request));
     rejectUnsupportedFields(body, ["rule"]);
 
     return Response.json({
-      rule: readRule(body.rule),
+      rule: getApplication().tenants.saveRule(
+        tenantId,
+        readRule(body.rule),
+      ),
     });
   });
 }

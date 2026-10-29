@@ -1,17 +1,17 @@
-import type { CaseState } from "../../../domain/types";
 import { withApiErrorHandling } from "../../../lib/api-error";
+import { getApplication } from "../../../lib/application";
 import { readJsonBody } from "../../../lib/http";
 import { readTenantScope } from "../../../lib/tenant-scope";
 import { readCaseInput } from "../../../lib/validation";
 
 export function GET(request: Request) {
   return withApiErrorHandling(() => {
-    readTenantScope(request, {
+    const tenantId = readTenantScope(request, {
       requireQuery: true,
     });
 
     return Response.json({
-      cases: [],
+      cases: getApplication().cases.list(tenantId),
     });
   });
 }
@@ -22,20 +22,13 @@ export function POST(request: Request) {
       requireQuery: false,
     });
     const input = readCaseInput(await readJsonBody(request));
-    const caseState: CaseState = {
-      ...input,
-      tenantId,
-      ready: false,
-      artifactCounts: {
-        call: 0,
-        document: 0,
-        email: 0,
-      },
-    };
 
     return Response.json(
       {
-        case: caseState,
+        case: getApplication().cases.create({
+          ...input,
+          tenantId,
+        }),
       },
       {
         status: 201,

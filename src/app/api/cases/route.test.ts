@@ -1,6 +1,15 @@
 /** @jest-environment node */
 
+import { installFreshApplication } from "../../../test/application";
 import { GET, POST } from "./route";
+
+beforeEach(() => {
+  const application = installFreshApplication();
+  application.tenants.create({
+    id: "tenant-1",
+    name: "North Office",
+  });
+});
 
 describe("GET /api/cases", () => {
   it("returns cases for a matching tenant scope", async () => {
@@ -40,6 +49,7 @@ describe("GET /api/cases", () => {
         message: "X-Tenant-Id must match the tenantId query parameter.",
       },
     });
+
   });
 });
 
@@ -72,6 +82,29 @@ describe("POST /api/cases", () => {
           email: 0,
         },
       },
+    });
+
+    const listResponse = await GET(
+      new Request("http://localhost/api/cases?tenantId=tenant-1", {
+        headers: {
+          "x-tenant-id": "tenant-1",
+        },
+      }),
+    );
+    await expect(listResponse.json()).resolves.toEqual({
+      cases: [
+        {
+          id: "case-1",
+          tenantId: "tenant-1",
+          name: "Mortgage advice review",
+          ready: false,
+          artifactCounts: {
+            call: 0,
+            document: 0,
+            email: 0,
+          },
+        },
+      ],
     });
   });
 });

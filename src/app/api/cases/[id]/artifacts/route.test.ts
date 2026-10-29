@@ -1,5 +1,7 @@
 /** @jest-environment node */
 
+import type { Application } from "../../../../../lib/application";
+import { installFreshApplication } from "../../../../../test/application";
 import { POST } from "./route";
 
 const context = {
@@ -7,6 +9,26 @@ const context = {
     id: "case-1",
   }),
 };
+
+let application: Application;
+
+beforeEach(() => {
+  application = installFreshApplication();
+  application.tenants.create({
+    id: "tenant-1",
+    name: "North Office",
+  });
+  application.tenants.saveRule("tenant-1", {
+    type: "countAtLeast",
+    artifactType: "document",
+    count: 1,
+  });
+  application.cases.create({
+    id: "case-1",
+    tenantId: "tenant-1",
+    name: "Mortgage advice review",
+  });
+});
 
 describe("POST /api/cases/[id]/artifacts", () => {
   it("accepts an artifact within the header tenant scope", async () => {
@@ -35,7 +57,19 @@ describe("POST /api/cases/[id]/artifacts", () => {
         tenantId: "tenant-1",
         type: "document",
       },
+      case: {
+        id: "case-1",
+        tenantId: "tenant-1",
+        name: "Mortgage advice review",
+        ready: true,
+        artifactCounts: {
+          call: 0,
+          document: 1,
+          email: 0,
+        },
+      },
     });
+    expect(application.cases.get("tenant-1", "case-1").ready).toBe(true);
   });
 
   it("rejects an unsupported artifact type", async () => {

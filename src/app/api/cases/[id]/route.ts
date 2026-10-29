@@ -1,4 +1,5 @@
 import { withApiErrorHandling } from "../../../../lib/api-error";
+import { getApplication } from "../../../../lib/application";
 import {
   readRouteId,
   type RouteContext,
@@ -7,13 +8,13 @@ import { readTenantScope } from "../../../../lib/tenant-scope";
 
 export function GET(request: Request, context: RouteContext) {
   return withApiErrorHandling(async () => {
-    readTenantScope(request, {
+    const tenantId = readTenantScope(request, {
       requireQuery: true,
     });
-    await readRouteId(context);
+    const caseId = await readRouteId(context);
 
     return Response.json({
-      case: null,
+      case: getApplication().cases.get(tenantId, caseId),
     });
   });
 }

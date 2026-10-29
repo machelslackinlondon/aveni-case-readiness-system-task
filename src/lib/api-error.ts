@@ -1,3 +1,5 @@
+import { ServiceError } from "../services/service-error";
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -7,6 +9,25 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
+}
+
+function getServiceErrorStatus(error: ServiceError) {
+  if (
+    error.code === "TENANT_ALREADY_EXISTS" ||
+    error.code === "CASE_ALREADY_EXISTS" ||
+    error.code === "ARTIFACT_ALREADY_EXISTS"
+  ) {
+    return 409;
+  }
+
+  if (
+    error.code === "TENANT_NOT_FOUND" ||
+    error.code === "CASE_NOT_FOUND"
+  ) {
+    return 404;
+  }
+
+  return 403;
 }
 
 export function errorResponse(error: unknown) {
@@ -20,6 +41,20 @@ export function errorResponse(error: unknown) {
       },
       {
         status: error.status,
+      },
+    );
+  }
+
+  if (error instanceof ServiceError) {
+    return Response.json(
+      {
+        error: {
+          code: error.code,
+          message: error.message,
+        },
+      },
+      {
+        status: getServiceErrorStatus(error),
       },
     );
   }

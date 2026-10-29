@@ -1,5 +1,6 @@
 /** @jest-environment node */
 
+import { installFreshApplication } from "../../../../../test/application";
 import { GET, PUT } from "./route";
 
 const context = {
@@ -7,6 +8,14 @@ const context = {
     id: "tenant-1",
   }),
 };
+
+beforeEach(() => {
+  const application = installFreshApplication();
+  application.tenants.create({
+    id: "tenant-1",
+    name: "North Office",
+  });
+});
 
 describe("GET /api/tenants/[id]/rules", () => {
   it("returns the tenant rule shape", async () => {
@@ -64,6 +73,12 @@ describe("PUT /api/tenants/[id]/rules", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ rule });
+
+    const getResponse = await GET(
+      new Request("http://localhost/api/tenants/tenant-1/rules"),
+      context,
+    );
+    await expect(getResponse.json()).resolves.toEqual({ rule });
   });
 
   it("rejects unsupported fields inside a rule", async () => {

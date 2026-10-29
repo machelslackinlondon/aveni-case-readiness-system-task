@@ -1,5 +1,5 @@
-import type { Artifact } from "../../../../../domain/types";
 import { withApiErrorHandling } from "../../../../../lib/api-error";
+import { getApplication } from "../../../../../lib/application";
 import { readJsonBody } from "../../../../../lib/http";
 import {
   readRouteId,
@@ -15,16 +15,13 @@ export function POST(request: Request, context: RouteContext) {
     });
     const caseId = await readRouteId(context);
     const input = readArtifactInput(await readJsonBody(request));
-    const artifact: Artifact = {
-      ...input,
-      caseId,
-      tenantId,
-    };
 
     return Response.json(
-      {
-        artifact,
-      },
+      getApplication().artifacts.add({
+        ...input,
+        caseId,
+        tenantId,
+      }),
       {
         status: 201,
       },

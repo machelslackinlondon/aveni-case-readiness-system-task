@@ -1,6 +1,11 @@
 /** @jest-environment node */
 
+import { installFreshApplication } from "../../../test/application";
 import { GET, POST } from "./route";
+
+beforeEach(() => {
+  installFreshApplication();
+});
 
 describe("GET /api/tenants", () => {
   it("returns a tenant collection", async () => {
@@ -34,6 +39,16 @@ describe("POST /api/tenants", () => {
         id: "tenant-1",
         name: "North Office",
       },
+    });
+
+    const listResponse = await GET();
+    await expect(listResponse.json()).resolves.toEqual({
+      tenants: [
+        {
+          id: "tenant-1",
+          name: "North Office",
+        },
+      ],
     });
   });
 
@@ -143,6 +158,31 @@ describe("POST /api/tenants", () => {
       error: {
         code: "VALIDATION_ERROR",
         message: "id must be a valid identifier.",
+      },
+    });
+  });
+
+  it("returns a conflict for a duplicate tenant identifier", async () => {
+    const createRequest = () =>
+      new Request("http://localhost/api/tenants", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          id: "tenant-1",
+          name: "North Office",
+        }),
+      });
+    await POST(createRequest());
+
+    const response = await POST(createRequest());
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "TENANT_ALREADY_EXISTS",
+        message: "Tenant tenant-1 already exists.",
       },
     });
   });

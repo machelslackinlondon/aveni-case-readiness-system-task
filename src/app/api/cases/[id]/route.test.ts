@@ -1,5 +1,6 @@
 /** @jest-environment node */
 
+import { installFreshApplication } from "../../../../test/application";
 import { GET } from "./route";
 
 const context = {
@@ -7,6 +8,19 @@ const context = {
     id: "case-1",
   }),
 };
+
+beforeEach(() => {
+  const application = installFreshApplication();
+  application.tenants.create({
+    id: "tenant-1",
+    name: "North Office",
+  });
+  application.cases.create({
+    id: "case-1",
+    tenantId: "tenant-1",
+    name: "Mortgage advice review",
+  });
+});
 
 describe("GET /api/cases/[id]", () => {
   it("returns the case detail shape for a matching tenant scope", async () => {
@@ -23,7 +37,17 @@ describe("GET /api/cases/[id]", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      case: null,
+      case: {
+        id: "case-1",
+        tenantId: "tenant-1",
+        name: "Mortgage advice review",
+        ready: false,
+        artifactCounts: {
+          call: 0,
+          document: 0,
+          email: 0,
+        },
+      },
     });
   });
 

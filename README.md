@@ -136,20 +136,16 @@ OpenAI Codex assisted with the Case Readiness application throughout scaffolding
 
 The following entries summarize representative prompts and their purpose; they are not verbatim transcripts.
 
-| Prompt | Purpose | AI-assisted scope |
-|---|---|---|
-| Initial project scaffolding | Initialise a minimal Next.js App Router application using TypeScript, ESLint, basic CSS, and placeholder navigation | Project configuration, homepage, layout, styling, and placeholder pages |
-| Jest configuration | Establish Jest, jsdom, and React Testing Library with a homepage smoke test | Test dependencies, configuration, scripts, setup, and initial test |
-| Incremental backend implementation | Add tenant-scoped types, validation, repositories, readiness rules, services, notifications, and REST routes in reviewed phases | Domain logic, in-memory data access, application services, route handlers, and focused tests |
-| `getApplication` integration | Compose shared repositories and services once, then connect thin API handlers to that application instance | Application composition, dependency wiring, API integration, and route tests |
-| Frontend API integration | Replace placeholder pages with tenant, rule, case, and artifact workflows using the existing APIs | React components, pages, endpoint-specific client functions, loading and error states, and component tests |
-| README documentation | Document the implemented application, setup, test commands, architecture, and readiness flow without inventing contracts | README content and Mermaid diagrams |
-| Test coverage and verification | Add focused automated coverage and run the project checks at each review gate | Jest tests, ESLint, standalone TypeScript checking, and production builds |
+| Prompt                             | Purpose                                                                                                                         | AI-assisted scope                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Initial project scaffolding        | Initialise a minimal Next.js App Router application using TypeScript, ESLint, basic CSS, and placeholder navigation             | Project configuration, homepage, layout, styling, and placeholder pages                                    |
+| Jest configuration                 | Establish Jest, jsdom, and React Testing Library with a homepage smoke test                                                     | Test dependencies, configuration, scripts, setup, and initial test                                         |
+| Incremental backend implementation | Add tenant-scoped types, validation, repositories, readiness rules, services, notifications, and REST routes in reviewed phases | Domain logic, in-memory data access, application services, route handlers, and focused tests               |
+| `getApplication` integration       | Compose shared repositories and services once, then connect thin API handlers to that application instance                      | Application composition, dependency wiring, API integration, and route tests                               |
+| Frontend API integration           | Replace placeholder pages with tenant, rule, case, and artifact workflows using the existing APIs                               | React components, pages, endpoint-specific client functions, loading and error states, and component tests |
+| README documentation               | Document the implemented application, setup, test commands, architecture, and readiness flow without inventing contracts        | README content and Mermaid diagrams                                                                        |
+| Test coverage and verification     | Add focused automated coverage and run the project checks at each review gate                                                   | Jest tests, ESLint, standalone TypeScript checking, and production builds                                  |
 
-### 3. Scope of retained AI assistance
-
-AI-assisted output is retained across the project configuration, application pages, domain rules, repositories, services, notifier, API routes, frontend components, automated tests, and this README. The human contributor directed the requirements, requested changes, and approved commits; commit approval does not imply that retained code was independently reimplemented.
-
-### 4. Verification and disclosure
+### 3. Verification and disclosure
 
 Generated output was reviewed incrementally and adapted when requested, including removing premature directory scaffolding. The final application acceptance check completed all 48 Jest tests, ESLint, standalone TypeScript checking, and the Next.js production build successfully. The repository contents, tests, and Git history remain the source of truth for the retained implementation.

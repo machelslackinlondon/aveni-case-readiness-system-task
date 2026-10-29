@@ -20,7 +20,17 @@ The application currently stores tenants, cases, artifacts, rules, and notificat
 
 ### Planned functionality
 
-No additional product functionality is specified in this repository. The readiness-logic and REST-contract sections below are documentation placeholders, not commitments to unimplemented features.
+Given more time, the next steps would be:
+
+- **PostgreSQL persistence:** replace the in-memory repositories with durable, tenant-scoped storage and database migrations.
+- **Database transactions:** make related writes, such as artifact creation and readiness updates, atomic and strongly consistent.
+- **Transactional outbox and asynchronous webhooks:** record notification events in the same transaction as state changes, then deliver webhooks asynchronously with retry handling.
+- **Tenant authentication and authorization:** authenticate callers and enforce tenant access at every application boundary.
+- **Rule versioning:** retain rule history so readiness decisions can be associated with the rule version used.
+- **Idempotency and concurrency handling:** prevent duplicate operations and protect updates from conflicting concurrent requests.
+- **Logging, monitoring, and error handling:** add structured logs, operational metrics, tracing, alerting, and production-safe error reporting.
+
+These items are not implemented in the current application. The REST API data-contract section below also remains a documentation placeholder.
 
 ## Technology stack
 
@@ -118,4 +128,28 @@ flowchart TD
 
 ## AI assistance disclosure
 
-OpenAI Codex was used to assist with implementation and with drafting this README. AI-assisted changes should be reviewed and verified before production use.
+### 1. Overview
+
+OpenAI Codex assisted with the Case Readiness application throughout scaffolding, configuration, testing, domain and service implementation, API integration, frontend development, and documentation. The work was completed incrementally from human-supplied requirements, constraints, corrections, and commit approvals.
+
+### 2. Prompt usage outline
+
+The following entries summarize representative prompts and their purpose; they are not verbatim transcripts.
+
+| Prompt | Purpose | AI-assisted scope |
+|---|---|---|
+| Initial project scaffolding | Initialise a minimal Next.js App Router application using TypeScript, ESLint, basic CSS, and placeholder navigation | Project configuration, homepage, layout, styling, and placeholder pages |
+| Jest configuration | Establish Jest, jsdom, and React Testing Library with a homepage smoke test | Test dependencies, configuration, scripts, setup, and initial test |
+| Incremental backend implementation | Add tenant-scoped types, validation, repositories, readiness rules, services, notifications, and REST routes in reviewed phases | Domain logic, in-memory data access, application services, route handlers, and focused tests |
+| `getApplication` integration | Compose shared repositories and services once, then connect thin API handlers to that application instance | Application composition, dependency wiring, API integration, and route tests |
+| Frontend API integration | Replace placeholder pages with tenant, rule, case, and artifact workflows using the existing APIs | React components, pages, endpoint-specific client functions, loading and error states, and component tests |
+| README documentation | Document the implemented application, setup, test commands, architecture, and readiness flow without inventing contracts | README content and Mermaid diagrams |
+| Test coverage and verification | Add focused automated coverage and run the project checks at each review gate | Jest tests, ESLint, standalone TypeScript checking, and production builds |
+
+### 3. Scope of retained AI assistance
+
+AI-assisted output is retained across the project configuration, application pages, domain rules, repositories, services, notifier, API routes, frontend components, automated tests, and this README. The human contributor directed the requirements, requested changes, and approved commits; commit approval does not imply that retained code was independently reimplemented.
+
+### 4. Verification and disclosure
+
+Generated output was reviewed incrementally and adapted when requested, including removing premature directory scaffolding. The final application acceptance check completed all 48 Jest tests, ESLint, standalone TypeScript checking, and the Next.js production build successfully. The repository contents, tests, and Git history remain the source of truth for the retained implementation.
